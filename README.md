@@ -1,13 +1,9 @@
-# TempDynamics_HostVirCoevol
-R and Python scripts used for analysis of Chlorella - Chlorovirus genomic coevolution data. 
-
-#######################################
 ## Scripts belonging to manuscript: 
-## The feedback between selection and demography shapes
-## genomic diversity during coevolution
-## 2018.11.23
-## cas.retel@eawag.ch
-#######################################
+## The feedback between selection and demography 
+## shapes genomic diversity during coevolution
+2018.11.23
+cas.retel@eawag.ch
+github.com/RetelC/TempDynamics_HostVirCoevol
 
 - downsampleBam.sh is a standalone shell script that calls
   samtools view -s to randomly sample reads from a .bam
@@ -41,7 +37,7 @@ file-writing wrappers are also included.
 - D00-99_nc64a_aaffiltering.R  ## filters pre-filtered host allele frequency dataset
 - D12-99_pbcv1_aaffiltering.R  ## filters pre-filtered virus allele frequency dataset
 - D00-99_nc64a_multipos.R	 ## combines genomic datasets of three replicates into one object, 
-  ## checks for overlap, adds annotation information. 
+    checks for overlap, adds annotation information. 
 - D12-99_pbcv1_multipos.R  ## same for virus
 - D00-99_process_phenotypes.R  ## processes pairwise phenotypic comparisons
 
