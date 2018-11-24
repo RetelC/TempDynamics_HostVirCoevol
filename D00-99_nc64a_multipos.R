@@ -5,14 +5,18 @@
 #######################################
 ## After filtering for artefacts, read in derived allele frequencies
 ## of all three replicates, check if there's overlap between replicates. 
-## Generate an allpos object containing a row for every position 
+## Generate an 'allpos'-object containing a row for every position 
 ## filtered in at least one replicate, with information on in which
 ## replicate it is found, if it is single-position, it's annotation etc. 
 
-## Comes after nc64a_aaffiltering.R, before _nc64a_SNPinfo.R
+## All annotation information comes from 
+## http://genome.jgi.doe.gov/ChlNC64A_1/ChlNC64A_1.home.html
+
+## Comes after nc64a_aaffiltering.R
 rm(list=ls())
 pkgs <- list("ggplot2", "magrittr", "RColorBrewer")
 sapply(pkgs, require, character.only=T)
+## files below can all be found at github.com/RetelC/TempDynamics_HostVirCoevol
 source('~/Documents/Functions/gg_multiplot.R')
 source('~/Documents/Functions/round_10e3.R')
 source('~/Documents/HVInt/scripts/fs_syncCalculations.R')
@@ -202,8 +206,8 @@ dafs_42_3rep <- dafs_42[
   ]
 
 #######################################
-## Add annotations to allpos-object: 
-## see 234dot2_D00-99_writeVCFs_plotAnns.R
+## Add annotations to allpos-object: predicted phenotypic effect was 
+## assessed using snpeff, which outputs vcf files read in below: 
 vcf_22 <- read.table(
   paste0(exp2017_dir, "genom/snpeff_dir/2dot2_D00-99_nc64a_var25_se_mp.vcf"), 
   header=T, sep="\t", stringsAsFactors=FALSE
@@ -243,7 +247,7 @@ allpos$muts.42[allpos$chrompos %in% vcf_42$chrompos] <- vcf_42$MUT.SEVERITY
 head(allpos)
 allpos$proteinId <- allpos$gff.entry <- rep(NA, nrow(allpos))
 
-
+## gff file downloaded from http://genome.jgi.doe.gov/ChlNC64A_1/ChlNC64A_1.home.html
 nc64a_gff <- read.table(
   "~/Documents/HVInt/Chlorella/ChlNC64A_1/genes_JF2016_GENESONLY.gff", 
   sep="\t", header=F, stringsAsFactors=F
@@ -408,7 +412,7 @@ plotAfs(
 )
 dev.off(); system(paste0("open ", exp2017_dir, "genom/figs/fig_234dot2_nc64a_D00-99_unique.pdf"))
 
-## write dafs to file; mainly for Lutz and Philine
+## write dafs to file; 
 writeSync(dafs_22_2or3rep[, -1], fname=paste0(exp2017_dir, "genom/daf_dir/2dot2_D00-99_nc64a_overlapping.daf"), colnames_v=TRUE)
 writeSync(dafs_32_2or3rep[, -1], fname=paste0(exp2017_dir, "genom/daf_dir/3dot2_D00-99_nc64a_overlapping.daf"), colnames_v=TRUE)
 writeSync(dafs_42_2or3rep[, -1], fname=paste0(exp2017_dir, "genom/daf_dir/4dot2_D00-99_nc64a_overlapping.daf"), colnames_v=TRUE)
@@ -417,10 +421,4 @@ writeSync(dafs_22_3rep[, -1], fname=paste0(exp2017_dir, "genom/daf_dir/2dot2_D00
 writeSync(dafs_32_2or3rep[, -1], fname=paste0(exp2017_dir, "genom/daf_dir/3dot2_D00-99_nc64a_threereps.daf"), colnames_v=TRUE)
 writeSync(dafs_42_2or3rep[, -1], fname=paste0(exp2017_dir, "genom/daf_dir/4dot2_D00-99_nc64a_threereps.daf"), colnames_v=TRUE)
 
-## These trajectories are ready to be clustered: 
-## see 234dot2_D00-99_nc64a_clustering.R
-## These positions are ready to be annotated: 
-writeSync(allpos, fname=paste0(exp2017_dir, "genom/snpol_dir/234dot2_nc64a_D00-99_allvariablepositions.txt"), colnames_v=TRUE)
-##, then see 234dot2_D00-99_nc64a_SNPinfo.R
-
-
+## proteinId can be matched with KOG, KEGG and GO information. 

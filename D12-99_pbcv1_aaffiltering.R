@@ -6,14 +6,16 @@
 ## date: 2017.10.13
 ## e-mail: cas.retel@eawag.ch
 ######################################
-
 ## Reads were mapped with bwa, 
 ## filtered per position for minimum coverage of 10X and
 ## maximum coverage of { mean + 3*sd }, 
 ## and a few quality criteria
-## Files with ancestral allele frequencies that go below
-## 95% at at least one time-point were written to the 
-## file read in below. 
+## This script starts with a .sync file containing information
+## on all positions that change derived allele frequency by at least 5%. 
+## This initial filtering criterium doesn't remove anything that is not
+## removed at a later stage anyway, and makes the dataset handleable in
+## terms of size. 
+
 
 rm(list=ls())
 pkgs <- list("ggplot2", "magrittr", "RColorBrewer")
@@ -27,7 +29,7 @@ source('~/Documents/HVInt/scripts/writeReadSync.R')
 
 for(tag_treat in c("2dot2_", "3dot2_", "4dot2_")){
   ## set unique experimental tag that defines treatment
-# tag_treat <- "2dot2_"
+# tag_treat <- "2dot2_" ## to run per replicate
 
 exp2017_dir <- "/Users/reteladmin/Documents/HVInt/Exp2017/Exp2017_30/"  
 tag_in <- paste(tag_treat, "D12-99_pbcv1.bwaal.variant5", sep="")
@@ -91,10 +93,10 @@ flt_var5 <- t(apply(
   cov_var5, 1, (function(x) (x <= mindepth) | (x > maxdepth))
 ))
 sum(flt_var5, na.rm=TRUE); mean(flt_var5, na.rm=TRUE)
-## 22% resp. 31 and 13% (!) of calls are removed.. what's with the variation?
+## 22% resp. 31 and 13% of calls are removed.. 
 ## average coverage per column is much lower than 1000X => I checked, and 
-## did not mess up the downsampling. Somehow, the variable regions are all
-## more difficult to map than the average. 
+## did not mess up the downsampling. The variable positions are 
+## often in more difficult to map regions. 
 
 sync_var5[cbind(
   matrix(rep(FALSE, 3*nrow(sync_var5)), ncol=3), flt_var5
@@ -143,7 +145,6 @@ rownames(dafs_var25) <- rownames(sync_var25) <- 1:sum(idx_var5)
 
 
 
-
 ###################
 ## find del calls and adjacent positions
 idx_var25_dels <- apply(
@@ -161,6 +162,8 @@ sum(!idx_var25_delregs); mean(!idx_var25_delregs)
 
 sync_var25_nodels <- sync_var25[!idx_var25_delregs, ]
 dafs_var25_nodels <- dafs_var25[!idx_var25_delregs, ]
+
+
 
 ###################
 ## find positions that are already variable at day 12
@@ -184,9 +187,8 @@ dafs_var25_denovo <- dafs_var25_nodels[!idx_var25_varanc, ]
 ###################
 
 ###################
-## check if derived allele frequency reaches the 
-## detection limit at least twice. (only makes sense in conjunction with 
-## _varanc)
+## check if derived allele frequency reaches the detection limit at 
+## least twice. (only works like this in conjunction with  _varanc)
 idx_var25_1x <- apply(
   dafs_var25_denovo, 1, (function(x) sum(x > .05, na.rm=TRUE) <= 1)
 )
@@ -194,6 +196,7 @@ sum(!idx_var25_1x); mean(!idx_var25_1x)
 ## 12 resp. 11 and 16
 sync_var25_2x <- sync_var25_denovo[!idx_var25_1x, ]
 dafs_var25_2x <- dafs_var25_denovo[!idx_var25_1x, ]
+
 
 ###################
 ## _4nas: remove positions if more than 1 NA's
@@ -263,12 +266,12 @@ if(nrow(sync_var25_nonas) <= 1){
 
 ###################
 ## Check if these positions fall within 1000bp from each other ? 
-## Did manually, not the case
+## Not the case
 ###################
 
 
 #############################
-## plot with ggplot2, presentation quality
+## Optional: plot with ggplot2, presentation quality
 ## generate plot-dataframe
 dafs_plotdf <- data.frame(
   tp=rep(tps, ifelse(is.matrix(dafs_var25_nonas),

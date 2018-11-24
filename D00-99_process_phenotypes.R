@@ -19,30 +19,25 @@ col_h <- "#009E73"
 col_h2 <- rgb(t(col2rgb("#009E73")), alpha=204, maxColorValue=255)
 col_v <- "#E69F00"
 col_v2 <- rgb(t(col2rgb("#E69F00")), alpha=204, maxColorValue=255)
+col_mm <- c(col_h, col_v)
+
 
 exp2017_dir <- "/Users/reteladmin/Documents/HVInt/Exp2017/Exp2017_30/"
-db_dir <- "/Users/reteladmin/Dropbox/Talks_Algae_Virus/data/"
-# file_in <- paste0(
-#   "all_time_shift_data_", 
-#   c("II_2", "III_2", "IV_2")[tag_treat==c("2dot2_", "3dot2_", "4dot2_")], 
-#   ".csv"
-# )
-# tag_out <- paste(tag_treat, "D00-99", sep="")
 
 ## read in data
 df_raw_22 <- read.csv(
-  "/Users/reteladmin/Dropbox/Talks_Algae_Virus/data/all_time_shift_data_II_2.csv", sep=";", stringsAsFactors=FALSE, header=TRUE
+  "./data/all_time_shift_data_II_2.csv", sep=";", stringsAsFactors=FALSE, header=TRUE
 )
 df_raw_32 <- read.csv(
-  "/Users/reteladmin/Dropbox/Talks_Algae_Virus/data/all_time_shift_data_III_2.csv", sep=";", stringsAsFactors=FALSE, header=TRUE
+  "./data/all_time_shift_data_III_2.csv", sep=";", stringsAsFactors=FALSE, header=TRUE
 )
 df_raw_42 <- read.csv(
-  "/Users/reteladmin/Dropbox/Talks_Algae_Virus/data/all_time_shift_data_IV_2.csv", sep=";", stringsAsFactors=FALSE, header=TRUE
+  "./data/all_time_shift_data_IV_2.csv", sep=";", stringsAsFactors=FALSE, header=TRUE
 )
 
 #######################################
-## INTERMEZZO: check a few things, if Lutz made any copying errors on 
-## the labelling etc. 
+## INTERMEZZO: check a few things, if any obvious copying errors on 
+## the labelling etc. were made. 
 # with(df_raw_42, table(host.day, clone))
 # with(df_raw_42, table(virus.day, host.day))
 # 
@@ -164,7 +159,7 @@ df_meanfit_42 <- with(df_contemp_42, data.frame(
 
 
 # plot fitness, i.e. host growth in presence of contemporary virus
-# pdf("~/Dropbox/Talks_Algae_Virus/First paper/figures/extfig_fitness.pdf", width=12, height=4)
+# pdf("./extfig_fitness.pdf", width=12, height=4)
 par(mfrow=c(1, 3))
 par(mai=c(0.42, 0.62, 0.12, 0.12))
 plot(c(0, 100), c(0, .4), xaxt='n', yaxt='n', type='n', ylab="", xlab="")
@@ -184,9 +179,9 @@ axis(side=1, at=20*(0:5), cex.axis=1.66)# ; axis(side=1, at=20*(0:5), cex.axis=1
 axis(side=2, at=.1*(0:4), las=1, cex.axis=1.66)
 with(df_contemp_42, points(host.day, mean.growth, col=col_h, pch=16))
 with(df_meanfit_42, lines(day, mean.fitness, col=col_h, lty=2, lwd=2))
-# dev.off(); system(paste0("open ~/Dropbox/Talks_Algae_Virus/First\\ paper/figures/extfig_fitness.pdf"))
+# dev.off(); system(paste0("open ./extfig_fitness.pdf"))
 
-# pdf("~/Dropbox/Talks_Algae_Virus/First paper/figures/extfig_fitness_sd.pdf", width=12, height=4)
+# pdf("./extfig_fitness_sd.pdf", width=12, height=4)
 par(mfrow=c(1, 3))
 par(mai=c(0.42, 0.62, 0.12, 0.12))
 plot(c(0, 100), c(0, .12), xaxt='n', yaxt='n', type='n', ylab="", xlab="")
@@ -204,7 +199,7 @@ axis(side=1, at=20*(0:5), cex.axis=1.66)# ; axis(side=1, at=20*(0:5), cex.axis=1
 axis(side=2, at=.02*(0:6), las=1, cex.axis=1.66)
 with(df_meanfit_42, lines(day, sd.fitness, col=col_h, lty=6, lwd=2))
 
-# dev.off(); system(paste0("open ~/Dropbox/Talks_Algae_Virus/First\\ paper/figures/extfig_fitness_sd.pdf"))
+# dev.off(); system(paste0("open ./extfig_fitness_sd.pdf"))
 
 ## include two more covariables to see if there is a difference between
 ## the "sweep" timepoints and the rest
@@ -226,6 +221,7 @@ summary(lm(growth_rate ~ sweep.occurred, data=df_contemp_42))
 ## significantly different, but the differences are not in the same direction. 
 ## FITNESS
 #######################################
+
 
 #######################################
 ## TRADEOFF BETWEEN RESISTANCE AND GROWTH
@@ -265,9 +261,8 @@ with(df_troff_32, summary(lm(mean.growth ~ indiv.res)))
 with(df_troff_42, summary(lm(mean.growth ~ indiv.res)))
 
 
-# pdf("~/Dropbox/Talks_Algae_Virus/First_paper/figures/extfig_tradeoff.pdf", 
+# pdf("./extfig_tradeoff.pdf", 
 #     width=8, height=4)
-# pdf("~/Documents/HVInt/Exp2017/Exp2017_16/pheno/figs/extfig_tradeoff.pdf", width=8, height=4)
 {
 par(mfrow=c(1, 1), mai=c(0.42, 0.62, 0.12, 0.12))
   plot(c(0, 11), c(0, .4), xaxt='n', yaxt='n', type='n', ylab="", xlab="")
@@ -285,7 +280,7 @@ legend(x=10.5, y=0.42, legend=c("I", "II", "III"), col=col_h, bty='o',
        xjust=0.5, lty=c(2, 3, 4), ncol=1, box.col="white")
 lines(c(8.75, 8.75), c(.31, .45)); lines(c(8.75, 11.5), c(.31, .31))
 }
-# dev.off(); system("open ~/Dropbox/Talks_Algae_Virus/First_paper/figures/extfig_tradeoff.pdf")
+# dev.off(); system("open ./extfig_tradeoff.pdf")
 ## 
 #######################################
 
@@ -448,10 +443,8 @@ colnames(hm_cl_42) <- tps_v42
 rownames(hm_cl_42) <- cls_h42
 
 
-# pdf(paste0(exp2017_dir, "pheno/figs/fig_234dot2_hm_inds.pdf"), 
-#     width=7, height=7)
 # par(mfrow=c(3, 1), mar=c(4, 4, 3, 2))
-pdf("~/Dropbox/Talks_Algae_Virus/figures/234dot2_pheno_hm.pdf", width=5, height=4)
+pdf("./234dot2_pheno_hm.pdf", width=5, height=4)
 par(mai=c(0.42, 0.82, 0.12, 0.12))
 image(
   1:length(cls_h22), 1:length(tps_v22), axes=F, xlab="Host individual", 
@@ -506,7 +499,7 @@ abline(h=(-.5 + 1:length(tps_v42)), lwd=1.5)
 axis(side=1, at=-5+10*(1:length(tps_h42)), cex.axis=1, font.axis=2, 
      las=3, labels=tps_h42)
 axis(side=2, at=1:length(tps_v42), cex.axis=1, font.axis=2, las=1, labels=tps_v42)
-dev.off(); system("open ~/Dropbox/Talks_Algae_Virus/figures/234dot2_pheno_hm.pdf")
+dev.off(); system("open ./234dot2_pheno_hm.pdf")
 # dev.off(); system(paste0("open ", exp2017_dir, "pheno/figs/fig_234dot2_hm_inds.pdf"))
 ## HEATMAP PER INDIVIDUAL
 #####################################
@@ -762,7 +755,6 @@ with(df_rr_42, lines(host.day.n, res.range.tp, lty=2, lwd=2, col=col_h))
 #   virus.day.n, inf.range, pch=16, cex=2.5, col=col_v
 # ))
 # dev.off(); system(paste0("open ", exp2017_dir, "pheno/figs/fig_234dot2_phenot_range.pdf"))
-col_mm <- c(col_h, col_v)
 
 # pdf(paste0(exp2017_dir, "pheno/figs/fig_234dot2_matchmismatch_extrapol.pdf"), 
 #     width=9, height=.6)
@@ -786,8 +778,6 @@ with(subset(df_irrext_42, match & !is.na(match)),
      points(day, rep(0, length(day)), col=col_mm[2], pch=15, cex=2))
 
 # dev.off(); system(paste0("open ", exp2017_dir, "pheno/figs/fig_234dot2_matchmismatch_extrapol.pdf"))
-## mismatch becomes match at one day, i.e. at day 45
-
 ## PHENOTYPIC RANGE (HOST RESISTANCE & VIRUS INFECTIVITY)
 #####################################
 
@@ -934,12 +924,6 @@ df_respf_42 <- data.frame(
   )))
 )
 
-# ggplot(data=df_respf_22, aes(x=phase, y=resistance, fill=comparison)) + 
-#   geom_bar(stat='identity', position=position_dodge()) + ylim(-2, 3) + 
-#   geom_errorbar(
-#     aes(ymin=resistance - stdv, ymax=resistance + stdv), width=.1, 
-#     position=position_dodge(.9)
-#   )
 # brewer.pal(13, name="Greys")
 col_gr <- c("#F7F7F7", "#969696", "#252525")
 
@@ -1041,7 +1025,8 @@ with(within(
 ## ARD VS FSD PHASE
 #####################################
 
-## write csv's for Carlos..
+
+## write csv's of infection matrix: 
 # write.csv(
 #   hm_cl_22, quote=F, 
 #   file=paste0(exp2017_dir, "pheno/repl2_infectionmat_hostindivs.csv")

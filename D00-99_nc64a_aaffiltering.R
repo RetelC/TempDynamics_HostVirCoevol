@@ -15,26 +15,17 @@
 ## 95% at at least one time-point were written to the 
 ## file read in below. 
 #######################################
-## Here, I filter ancestral allele frequencies for variation at D00 
-## instead of at D12. To achieve this, the first thing to do is download
-## information from all .variant25-positions for 4dot2_D00: 
-#!/bin/bash
-# awk 'FNR==NR{a[$1,$2]++;next}a[$1,$2]{print}' \
-#   ppl_dir/2dot2_D00-99_nc64a.bwaal.variant25.sync \
-#   ppl_dir/4dot2_D00-99_nc64a.bwaal.sync | cut -f1-4 > \
-#   ppl_dir/D00_nc64a.bwaal.variant25.2dot2.sync
-# awk 'FNR==NR{a[$1,$2]++;next}a[$1,$2]{print}' \
-#   ppl_dir/3dot2_D00-99_nc64a.bwaal.variant25.sync \
-#   ppl_dir/4dot2_D00-99_nc64a.bwaal.sync | cut -f1-4 > \
-#   ppl_dir/D00_nc64a.bwaal.variant25.3dot2.sync
-#######################################
+## Here, this script starts with a .sync file containing information
+## on all positions that change derived allele frequency by at least 25%. 
+## This initial filtering criterium doesn't remove anything that is not
+## removed at a later stage anyway, and makes the dataset handleable in
+## terms of size. 
 
-#!/bin/R
 
 rm(list=ls())
 pkgs <- list("ggplot2", "magrittr", "RColorBrewer")
 sapply(pkgs, require, character.only=T)
-## files below can also be found at github.com/RetelC/TempDynamics_HostVirCoevolut
+## files below can also be found at github.com/RetelC/TempDynamics_HostVirCoevol
 source('~/Documents/Functions/gg_multiplot.R')
 source('~/Documents/Functions/round_10e3.R')
 source('~/Documents/HVInt/scripts/fs_syncCalculations.R')
@@ -43,8 +34,10 @@ source('~/Documents/HVInt/scripts/plotAfs.R')
 source('~/Documents/HVInt/scripts/writeReadSync.R')
 
 for(tag_treat in c("2dot2_", "3dot2_", "4dot2_")){
-## set unique experimental tag that defines treatment
-# tag_treat <- "4dot2_"
+## set unique experimental tag that defines treatment 
+## (also recognizes input files)
+# tag_treat <- "4dot2_" ## to run per replicate
+
 
 exp2017_dir <- "/Users/reteladmin/Documents/HVInt/Exp2017/Exp2017_30/"
 tag_in <- paste(tag_treat, "D00-99_nc64a.bwaal.variant25", sep="")
@@ -92,8 +85,7 @@ if(tag_treat %in% c("2dot2_", "3dot2_")){
 
 #############################
 ## this is raw sequencing calls; set calls below minimum and maximum depth
-## to NA (I already did this before subsetting to _var25, but decided to
-## download the raw frequency calls). Max coverage (including D00 ,07 and 08): 
+## to NA. Max coverage (including D00 ,07 and 08): 
 ## 2dot2: 109, 181, 88, 41, 269, 55, 41, 109, 201, 130, 229, 360
 ## 3dot2: 176, 287, 70, 30, 728, 761, 48, 142, 392, 91, 146, 117
 ## 4dot2: 298, 444, 822, 332, 33, 709, 747, 33, 209, 361, 427
@@ -200,11 +192,11 @@ dafs_var25_denovo <- dafs_var25_nodels[!idx_var25_varanc, ]
 
 ###################
 ## INTERMEZZO: WRITE TO FILE TO ASSESS BETWEEN-REP REPRODUCIBILITY
-write.table(
-  sync_var25_nodels[idx_var25_varanc, ], quote=FALSE, row.names=FALSE,
-  col.names=FALSE, sep="\t",
-  file=paste0(exp2017_dir, "genom/ppl_dir/", tag_out, "_varanc.sync")
-)
+# write.table(
+#   sync_var25_nodels[idx_var25_varanc, ], quote=FALSE, row.names=FALSE,
+#   col.names=FALSE, sep="\t",
+#   file=paste0(exp2017_dir, "genom/ppl_dir/", tag_out, "_varanc.sync")
+# )
 ## INTERMEZZO: WRITE TO FILE TO ASSESS BETWEEN-REP REPRODUCIBILITY
 ###################
 
@@ -235,8 +227,7 @@ text(
 )
 nas_max <- 4 ## or length(tps_hicov) - 3
 abline(v=.5 + nas_max, lty=2, col=2) ## remove what's right of the line
-## With two extra time points available, allowing for 4 NA values makes 
-## sense for all three replicates
+
 
 idx_3nas <- apply(
   dafs_var25_2x, 1, (function(x) sum(is.na(x)) > nas_max)
@@ -293,7 +284,8 @@ if(nrow(sync_var25_3nas) <= 1){
   dafs_var25_3nas <- matrix(dafs_var25_3nas, nrow=1)
 }
 
-###################
+##################################################################
+##### MULTI-POSITION POLYMORPHISMS ###############################
 ## Check if these positions fall within 1000bp from each other
 nbs_var25_3nas <- with(
   sync_var25_3nas,
@@ -474,7 +466,6 @@ if(tag_treat=="2dot2_"){
 # }
 #system(paste0("open ~/Downloads/", tag_out, "_mergeSNPs.pos"))
 
-
 ## merge positions
 dafs_var25_3nas_mr <- mergePositionsDaf(
   input=cbind(sync_var25_3nas[, 1:2],
@@ -495,10 +486,12 @@ for(i in 1:nrow(dafs_var25_3nas_mr)){
 ## remove chrom and pos from dafs_*
 dafs_var25_3nas_mr <- as.matrix(dafs_var25_3nas_mr[, -(1:2)])
 dim(dafs_var25_3nas); dim(dafs_var25_3nas_mr)
+##### MULTI-POSITION POLYMORPHISMS ###############################
+##################################################################
 
 
 #############################
-## plot with ggplot2, presentation quality
+## optional: plot with ggplot2, presentation quality
 colyr <- colorRampPalette(colors=c("yellow", "dark red"), space="rgb")
 set.seed(2303)
 colbg <- colorRampPalette(colors=brewer.pal(n=9, "Greens"), space="rgb")(nrow(dafs_var25_3nas))[sample(1:nrow(dafs_var25_3nas))]

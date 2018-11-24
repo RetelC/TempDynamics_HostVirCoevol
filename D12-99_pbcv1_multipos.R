@@ -8,8 +8,6 @@
 ## Generate an allpos object containing a row for every position 
 ## filtered in at least one replicate, with information on in which
 ## replicate it is found, if it is single-position, it's annotation etc. 
-##### Did this for the host a long time ago, but it was never really #####
-##### high on the priority list for the virus ####
 
 rm(list=ls())
 pkgs <- list("ggplot2", "magrittr", "RColorBrewer")
@@ -35,8 +33,7 @@ tps_v42 <- c(15, 21, 27, 29, 35, 51, 64, 70, 83, 99)
 
 
 ######################################
-## VIRUS GENOMICS: read in .sync files of filtered SNP datasets, 
-## calculate derived afs, calculate S_eff
+## VIRUS GENOMICS: read in .sync files of filtered SNP datasets
 sync_v22 <- readSync(
   paste0(exp2017_dir, 'genom/ppl_dir/2dot2_D12-99_pbcv1_var5_filtered.sync'), tps_v22
 )
@@ -136,7 +133,9 @@ dafs_v42_3reps <- dafs_v42[
   dafs_v42$chrompos %in% with(allpos, chrompos[reps.found >= 3]), 
   ]
 
-## see 234dot2_D00-99_writeVCFs_plotAnns.R
+## see 234dot2_D00-99_writeVCFs_plotAnns.R; 
+## predicted phenotypic effects were calculated with snpeff, and are matched
+## to allele frequencies below. 
 vcf_v22 <- read.table(
   paste0(exp2017_dir, "genom/snpeff_dir/2dot2_D12-99_pbcv1_var5_se_mp.vcf"), 
   header=T, sep="\t", stringsAsFactors=FALSE
